@@ -200,6 +200,34 @@ Autenticação via header `X-API-Key`
 
 Contribuições são bem-vindas! Por favor, sinta-se à vontade para enviar pull requests.
 
+## Contexto do Desenvolvimento
+
+### Histórico de Decisões Importantes:
+1. Modelo inicial usa PyTorch local para MVP
+2. Planejada migração para Claude AI (mais escalável)
+3. Banco MySQL escolhido via Laragon para desenvolvimento
+
+### Pontos de Atenção:
+- Modelo `APIKey` teve campo renomeado de 'key' para 'chave'
+- Todas as migrações foram refeitas do zero
+- Configuração padrão da IA é criada automaticamente
+- Interface administrativa customizada em `/admin/ia/`
+
+### Fluxo Principal:
+1. Usuário registra perfil com dados de saúde
+2. Sistema calcula necessidades calóricas (BMR/TDEE)
+3. IA sugere dieta baseada em:
+   - Preferências do usuário
+   - Restrições alimentares
+   - Histórico de feedback
+   - Objetivos (perder/manter/ganhar peso)
+
+### Próximas Implementações Planejadas:
+1. Integração com Claude AI
+2. Sistema de pagamentos
+3. Métricas avançadas no dashboard
+4. Expansão dos testes unitários
+
 ## Licença
 
 Este projeto está sob a licença MIT. 
