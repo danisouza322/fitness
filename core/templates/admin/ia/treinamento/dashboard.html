@@ -1,0 +1,277 @@
+{% extends "admin/ia/treinamento/base.html" %}
+{% load static %}
+
+{% block training_content %}
+<div class="training-section">
+  <div class="training-header">
+    <h2>Upload de Documentos</h2>
+  </div>
+  <div class="training-content">
+    <form method="post" enctype="multipart/form-data" class="training-form" action="{% url 'upload_documento' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="titulo">Título do Documento</label>
+        <input type="text" id="titulo" name="titulo" required>
+      </div>
+      <div class="form-group">
+        <label for="tipo">Tipo do Documento</label>
+        <select id="tipo" name="tipo" required>
+          <option value="PDF">PDF</option>
+          <option value="TXT">TXT</option>
+          <option value="CSV">CSV</option>
+          <option value="JSON">JSON</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="arquivo">Arquivo</label>
+        <input type="file" id="arquivo" name="arquivo" required>
+      </div>
+      <button type="submit" class="btn-training btn-primary">Enviar Documento</button>
+    </form>
+  </div>
+</div>
+
+<div class="training-section">
+  <div class="training-header">
+    <h2>Criar Novo Modelo</h2>
+  </div>
+  <div class="training-content">
+    <form method="post" class="training-form" action="{% url 'criar_modelo' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="nome">Nome do Modelo</label>
+        <input type="text" id="nome" name="nome" required>
+      </div>
+      <div class="form-group">
+        <label for="tipo_modelo">Tipo do Modelo</label>
+        <select id="tipo_modelo" name="tipo_modelo" required>
+          <option value="nutricao">Nutrição</option>
+          <option value="exercicios">Exercícios</option>
+          <option value="suplementacao">Suplementação</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="versao">Versão</label>
+        <input type="text" id="versao" name="versao" required>
+      </div>
+      <div class="form-group">
+        <label for="parametros">Parâmetros (JSON)</label>
+        <textarea id="parametros" name="parametros" required></textarea>
+      </div>
+      <button type="submit" class="btn-training btn-primary">Criar Modelo</button>
+    </form>
+  </div>
+</div>
+
+<div class="training-section">
+  <div class="training-header">
+    <h2>Documentos de Treinamento</h2>
+  </div>
+  <div class="training-content">
+    <table class="training-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Data de Upload</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in documentos %}
+        <tr>
+          <td>{{ doc.titulo }}</td>
+          <td>{{ doc.tipo }}</td>
+          <td>
+            <span id="doc-status-{{ doc.id }}" class="status-badge status-{{ doc.status|lower }}">
+              {{ doc.get_status_display }}
+            </span>
+          </td>
+          <td>{{ doc.data_upload|date:"d/m/Y H:i" }}</td>
+          <td>
+            <button onclick="processarDocumento({{ doc.id }})" class="btn-training btn-secondary">
+              Processar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">Nenhum documento encontrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="training-section">
+  <div class="training-header">
+    <h2>Modelos de IA</h2>
+  </div>
+  <div class="training-content">
+    <table class="training-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Tipo</th>
+          <th>Versão</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for modelo in modelos %}
+        <tr>
+          <td>{{ modelo.nome }}</td>
+          <td>{{ modelo.get_tipo_display }}</td>
+          <td>{{ modelo.versao }}</td>
+          <td>
+            <span id="modelo-status-{{ modelo.id }}" class="status-badge status-{{ modelo.status|lower }}">
+              {{ modelo.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <button onclick="treinarModelo({{ modelo.id }})" class="btn-training btn-primary">
+              Treinar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">Nenhum modelo encontrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="training-section">
+  <div class="training-header">
+    <h2>Chaves de API</h2>
+  </div>
+  <div class="training-content">
+    <form method="post" class="training-form" action="{% url 'gerar_api_key' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="nivel_acesso">Nível de Acesso</label>
+        <select id="nivel_acesso" name="nivel_acesso" required>
+          <option value="read">Somente Leitura</option>
+          <option value="write">Leitura e Escrita</option>
+          <option value="training">Treinamento</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-training btn-primary">Gerar Nova Chave</button>
+    </form>
+
+    <table class="training-table">
+      <thead>
+        <tr>
+          <th>Chave</th>
+          <th>Nível de Acesso</th>
+          <th>Status</th>
+          <th>Requisições</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key in api_keys %}
+        <tr>
+          <td>{{ key.key|truncatechars:20 }}</td>
+          <td>{{ key.get_nivel_acesso_display }}</td>
+          <td>
+            <span class="status-badge status-{{ key.ativo|yesno:'active,error' }}">
+              {{ key.ativo|yesno:'Ativa,Inativa' }}
+            </span>
+          </td>
+          <td>{{ key.total_requisicoes }}</td>
+          <td>
+            <button onclick="revogarChave('{{ key.key }}')" class="btn-training btn-secondary">
+              Revogar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">Nenhuma chave de API encontrada.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script>
+  function processarDocumento(docId) {
+    if (confirmAction('Deseja processar este documento?')) {
+      fetch(`/admin/ia/processar-documento/${docId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          updateStatus(`doc-status-${docId}`, data.status, data.message);
+          showAlert('success', 'Documento enviado para processamento');
+        } else {
+          showAlert('error', data.message || 'Erro ao processar documento');
+        }
+      })
+      .catch(error => {
+        showAlert('error', 'Erro ao processar documento');
+      });
+    }
+  }
+
+  function treinarModelo(modeloId) {
+    if (confirmAction('Deseja iniciar o treinamento deste modelo?')) {
+      fetch(`/admin/ia/treinar-modelo/${modeloId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          updateStatus(`modelo-status-${modeloId}`, data.status, data.message);
+          showAlert('success', 'Treinamento iniciado com sucesso');
+        } else {
+          showAlert('error', data.message || 'Erro ao iniciar treinamento');
+        }
+      })
+      .catch(error => {
+        showAlert('error', 'Erro ao iniciar treinamento');
+      });
+    }
+  }
+
+  function revogarChave(key) {
+    if (confirmAction('Tem certeza que deseja revogar esta chave de API?')) {
+      fetch(`/admin/ia/revogar-api-key/${key}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          showAlert('error', data.message || 'Erro ao revogar chave');
+        }
+      })
+      .catch(error => {
+        showAlert('error', 'Erro ao revogar chave');
+      });
+    }
+  }
+</script>
+{% endblock %} 

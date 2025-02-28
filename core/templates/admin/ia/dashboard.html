@@ -1,0 +1,147 @@
+{% extends "admin/ia/base.html" %}
+
+{% block ia_content %}
+<!-- Estatísticas Gerais -->
+<div class="ia-card">
+    <h2>Estatísticas Gerais</h2>
+    <div class="ia-stats">
+        <div class="ia-stat-card">
+            <div class="ia-stat-value">{{ total_dietas }}</div>
+            <div class="ia-stat-label">Dietas Geradas</div>
+        </div>
+        <div class="ia-stat-card">
+            <div class="ia-stat-value">{{ media_satisfacao|floatformat:1 }}</div>
+            <div class="ia-stat-label">Satisfação Média</div>
+        </div>
+        <div class="ia-stat-card">
+            <div class="ia-stat-value">{{ taxa_aderencia|floatformat:1 }}%</div>
+            <div class="ia-stat-label">Taxa de Aderência</div>
+        </div>
+        <div class="ia-stat-card">
+            <div class="ia-stat-value">{{ total_usuarios }}</div>
+            <div class="ia-stat-label">Usuários Ativos</div>
+        </div>
+    </div>
+</div>
+
+<!-- Configuração Atual -->
+<div class="ia-card">
+    <h2>Configuração Atual da IA</h2>
+    {% if config_atual %}
+    <table class="ia-table">
+        <tr>
+            <th>Nome</th>
+            <td>{{ config_atual.nome }}</td>
+            <th>Última Atualização</th>
+            <td>{{ config_atual.data_atualizacao|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th>Score Base</th>
+            <td>{{ config_atual.score_base }}</td>
+            <th>Peso Feedback</th>
+            <td>{{ config_atual.peso_feedback }}</td>
+        </tr>
+        <tr>
+            <th>Ajuste Mínimo</th>
+            <td>{{ config_atual.ajuste_porcao_min }}x</td>
+            <th>Ajuste Máximo</th>
+            <td>{{ config_atual.ajuste_porcao_max }}x</td>
+        </tr>
+    </table>
+    <div class="mt-3">
+        <a href="{% url 'admin:core_configuracaoia_change' config_atual.id %}" class="button">
+            Editar Configuração
+        </a>
+    </div>
+    {% else %}
+    <p>Nenhuma configuração ativa encontrada.</p>
+    <a href="{% url 'admin:core_configuracaoia_add' %}" class="button">
+        Criar Nova Configuração
+    </a>
+    {% endif %}
+</div>
+
+<!-- Gráfico de Performance -->
+<div class="ia-card">
+    <h2>Performance da IA</h2>
+    <div class="ia-chart">
+        <canvas id="performanceChart"></canvas>
+    </div>
+</div>
+
+<!-- Últimos Logs -->
+<div class="ia-card">
+    <h2>Últimos Logs</h2>
+    <table class="ia-table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th>Usuário</th>
+                <th>Mensagem</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in ultimos_logs %}
+            <tr>
+                <td>{{ log.data|date:"d/m/Y H:i" }}</td>
+                <td>{{ log.get_tipo_display }}</td>
+                <td>
+                    <span class="ia-status ia-status-{% if log.status == 'S' %}success{% elif log.status == 'E' %}error{% else %}warning{% endif %}">
+                        {{ log.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ log.usuario.username }}</td>
+                <td>{{ log.mensagem|truncatechars:100 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="mt-3">
+        <a href="{% url 'admin:core_logtreinamentoia_changelist' %}" class="button">
+            Ver Todos os Logs
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    const labels = {{ datas_performance|safe }};
+    const satisfacaoData = {{ satisfacao_performance|safe }};
+    const aderenciaData = {{ aderencia_performance|safe }};
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Satisfação Média',
+                    data: satisfacaoData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Taxa de Aderência',
+                    data: aderenciaData,
+                    borderColor: 'rgb(153, 102, 255)',
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %} 

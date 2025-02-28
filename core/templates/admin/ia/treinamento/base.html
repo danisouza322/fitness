@@ -1,0 +1,197 @@
+{% extends "admin/ia/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .training-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+  }
+
+  .training-header {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+
+  .training-header h2 {
+    color: #2c3e50;
+    font-size: 1.5em;
+    margin: 0;
+  }
+
+  .training-content {
+    margin-top: 15px;
+  }
+
+  .training-form {
+    max-width: 600px;
+  }
+
+  .training-form .form-group {
+    margin-bottom: 15px;
+  }
+
+  .training-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .training-form input[type="text"],
+  .training-form input[type="file"],
+  .training-form select,
+  .training-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .training-form textarea {
+    min-height: 100px;
+  }
+
+  .training-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .training-table th,
+  .training-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+
+  .training-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+
+  .training-table tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .status-active {
+    background-color: #e3fcef;
+    color: #0a8554;
+  }
+
+  .status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .status-error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .btn-training {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #545b62;
+  }
+
+  .alert {
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+  .alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+  }
+
+  .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+  }
+
+  .alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    color: #856404;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="training-container">
+  {% block training_content %}
+  {% endblock %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script>
+  // Funções auxiliares para o treinamento
+  function updateStatus(elementId, status, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.textContent = message;
+      element.className = `status-badge status-${status}`;
+    }
+  }
+
+  function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.textContent = message;
+    
+    const container = document.querySelector('.training-container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 5000);
+  }
+
+  function confirmAction(message) {
+    return confirm(message);
+  }
+</script>
+{% endblock %} 

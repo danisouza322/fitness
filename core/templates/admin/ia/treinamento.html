@@ -1,0 +1,186 @@
+{% extends "admin/ia/base.html" %}
+
+{% block ia_content %}
+<div class="row">
+    <!-- Seção de Upload de Documentos -->
+    <div class="col-md-6 mb-4">
+        <div class="ia-card">
+            <h2>Upload de Documentos</h2>
+            <form method="post" action="{% url 'upload_documento' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Título do Documento</label>
+                    <input type="text" name="titulo" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Documento</label>
+                    <select name="tipo" class="form-control" required>
+                        <option value="PDF">PDF</option>
+                        <option value="TXT">Texto</option>
+                        <option value="CSV">CSV</option>
+                        <option value="JSON">JSON</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Arquivo</label>
+                    <input type="file" name="arquivo" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload me-2"></i>Fazer Upload
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Seção de Criação de Modelo -->
+    <div class="col-md-6 mb-4">
+        <div class="ia-card">
+            <h2>Criar Novo Modelo</h2>
+            <form method="post" action="{% url 'criar_modelo' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Nome do Modelo</label>
+                    <input type="text" name="nome" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-control" required>
+                        <option value="NUT">Nutrição</option>
+                        <option value="EXE">Exercícios</option>
+                        <option value="SUP">Suplementação</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Versão</label>
+                    <input type="text" name="versao" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Parâmetros (JSON)</label>
+                    <textarea name="parametros" class="form-control" rows="4">{}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Criar Modelo
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Lista de Documentos -->
+    <div class="col-md-6 mb-4">
+        <div class="ia-card">
+            <h2>Documentos de Treinamento</h2>
+            <div class="table-responsive">
+                <table class="ia-table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documentos %}
+                        <tr>
+                            <td>{{ doc.titulo }}</td>
+                            <td>{{ doc.get_tipo_display }}</td>
+                            <td>
+                                <span class="ia-status ia-status-{% if doc.status_processamento == 'C' %}success{% elif doc.status_processamento == 'E' %}error{% else %}warning{% endif %}">
+                                    {{ doc.get_status_processamento_display }}
+                                </span>
+                            </td>
+                            <td>{{ doc.data_upload|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Modelos -->
+    <div class="col-md-6 mb-4">
+        <div class="ia-card">
+            <h2>Modelos de IA</h2>
+            <div class="table-responsive">
+                <table class="ia-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tipo</th>
+                            <th>Versão</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for modelo in modelos %}
+                        <tr>
+                            <td>{{ modelo.nome }}</td>
+                            <td>{{ modelo.get_tipo_display }}</td>
+                            <td>v{{ modelo.versao }}</td>
+                            <td>
+                                <span class="ia-status ia-status-{% if modelo.status == 'A' %}success{% elif modelo.status == 'I' %}error{% else %}warning{% endif %}">
+                                    {{ modelo.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seção de API Keys -->
+<div class="row">
+    <div class="col-12">
+        <div class="ia-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Chaves de API</h2>
+                <form method="post" action="{% url 'gerar_api_key' %}" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <select name="nivel_acesso" class="form-control">
+                        <option value="L">Leitura</option>
+                        <option value="E">Escrita</option>
+                        <option value="T">Treinamento</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-key me-2"></i>Gerar Nova Chave
+                    </button>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="ia-table">
+                    <thead>
+                        <tr>
+                            <th>Chave</th>
+                            <th>Nível de Acesso</th>
+                            <th>Status</th>
+                            <th>Requisições</th>
+                            <th>Última Utilização</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key in api_keys %}
+                        <tr>
+                            <td><code>{{ key.chave }}</code></td>
+                            <td>{{ key.get_nivel_acesso_display }}</td>
+                            <td>
+                                <span class="ia-status ia-status-{% if key.ativa %}success{% else %}error{% endif %}">
+                                    {{ key.ativa|yesno:"Ativa,Inativa" }}
+                                </span>
+                            </td>
+                            <td>{{ key.requisicoes_realizadas }}/{{ key.limite_requisicoes }}</td>
+                            <td>{{ key.ultima_utilizacao|default_if_none:"-"|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

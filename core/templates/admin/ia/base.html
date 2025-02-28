@@ -1,0 +1,82 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .ia-dashboard {
+        padding: 20px;
+    }
+    .ia-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+    .ia-card h2 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+    .ia-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .ia-stat-card {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+        text-align: center;
+    }
+    .ia-stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c5282;
+    }
+    .ia-stat-label {
+        color: #666;
+        font-size: 14px;
+    }
+    .ia-chart {
+        height: 300px;
+        margin-bottom: 20px;
+    }
+    .ia-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .ia-table th, .ia-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    .ia-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+    .ia-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .ia-status-success { background: #d4edda; color: #155724; }
+    .ia-status-error { background: #f8d7da; color: #721c24; }
+    .ia-status-warning { background: #fff3cd; color: #856404; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ia-dashboard">
+    {% block ia_content %}
+    {% endblock %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %} 

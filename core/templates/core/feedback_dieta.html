@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Feedback da Dieta</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Sua opinião é muito importante para melhorarmos nossas sugestões de dieta.
+                        Por favor, nos conte como foi sua experiência com esta dieta.
+                    </p>
+                    
+                    <!-- Resumo da Dieta -->
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Resumo da Dieta</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2">
+                                        <i class="bi bi-calendar-date text-primary me-2"></i>
+                                        Data: {{ dieta.data_criacao|date:"d/m/Y" }}
+                                    </p>
+                                    {% with totais=dieta.calcular_totais %}
+                                    <p class="mb-2">
+                                        <i class="bi bi-lightning-charge text-primary me-2"></i>
+                                        Calorias Totais: {{ totais.calorias }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="bi bi-pie-chart text-primary me-2"></i>
+                                        Macros: P{{ totais.proteinas }}g / C{{ totais.carboidratos }}g / G{{ totais.gorduras }}g
+                                    </p>
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulário de Feedback -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Qual sua satisfação com esta dieta?</label>
+                            {{ form.satisfacao }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Você conseguiu seguir a dieta?</label>
+                            {{ form.aderencia }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Comentários adicionais (opcional)</label>
+                            {{ form.comentarios }}
+                            <div class="form-text">
+                                Conte-nos o que funcionou bem e o que poderia ser melhorado.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-2"></i>Enviar Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

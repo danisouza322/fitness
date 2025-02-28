@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Perfil de Saúde</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.idade.id_for_label }}" class="form-label">Idade</label>
+                                {{ form.idade }}
+                                {% for error in form.idade.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.genero.id_for_label }}" class="form-label">Gênero</label>
+                                {{ form.genero }}
+                                {% for error in form.genero.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.altura.id_for_label }}" class="form-label">Altura (cm)</label>
+                                {{ form.altura }}
+                                {% for error in form.altura.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.peso.id_for_label }}" class="form-label">Peso (kg)</label>
+                                {{ form.peso }}
+                                {% for error in form.peso.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.nivel_atividade.id_for_label }}" class="form-label">Nível de Atividade</label>
+                                {{ form.nivel_atividade }}
+                                {% for error in form.nivel_atividade.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="{{ form.objetivo.id_for_label }}" class="form-label">Objetivo</label>
+                                {{ form.objetivo }}
+                                {% for error in form.objetivo.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Salvar Perfil</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
