@@ -59,12 +59,34 @@ fitness_platform/
 - transformers==4.37.2
 - python-dotenv==1.0.1
 
+## Observação sobre IA
+
+Atualmente o sistema utiliza um modelo PyTorch local para recomendações. Para melhor escalabilidade e precisão, considere migrar para o Claude AI (Anthropic):
+
+### Vantagens do Claude:
+- Melhor compreensão de contexto nutricional
+- Respostas mais fundamentadas em português
+- Excelente para recomendações personalizadas
+- Processamento em nuvem (sem necessidade de GPU local)
+- Custo-benefício competitivo
+
+### Custos Estimados (Claude 3):
+- Haiku (básico): Ideal para início, ~R$200/mês
+- Sonnet (recomendado): Melhor custo-benefício para escala
+- Opus (premium): Para volumes muito altos
+
+### Requisitos de Hardware com Claude:
+- RAM: 8GB (suficiente)
+- CPU: 4 cores (suficiente)
+- Sem necessidade de GPU
+- Armazenamento: 20GB SSD
+
 ## Instalação
 
 1. Clone o repositório:
 ```bash
-git clone https://seu-repositorio/fitness-platform.git
-cd fitness-platform
+git clone https://github.com/danisouza322/fitness.git
+cd fitness
 ```
 
 2. Crie e ative um ambiente virtual:
